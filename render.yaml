@@ -11,7 +11,7 @@ services:
       - key: PORT
         value: 5000
       - key: CORS_ORIGIN
-        value: https://flexipdf.onrender.com
+        value: https://flexipdf-9frt.onrender.com
       - key: NODE_VERSION
         value: 20.14.0
     autoDeploy: true 
