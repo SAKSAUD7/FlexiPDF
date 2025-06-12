@@ -6,7 +6,7 @@
   "scripts": {
     "install": "npm --prefix server install && npm --prefix client install",
     "build": "npm --prefix client run build",
-    "start": "node server/index.js"
+    "start": "npm --prefix server start"
   },
   "engines": {
     "node": "20.x"
