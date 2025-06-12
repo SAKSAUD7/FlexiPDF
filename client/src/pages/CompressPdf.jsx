@@ -1,19 +1,49 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
-import { DocumentMinusIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
-import GoogleAd from '../components/GoogleAd';
+import { ArrowLeftIcon, DocumentArrowUpIcon, DocumentMinusIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { uploadFile } from '../utils/api';
+import { downloadBlob } from '../utils/fileUtils';
+import toast from 'react-hot-toast';
 
 export default function CompressPdf() {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [isCompressing, setIsCompressing] = useState(false);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const handleFileSelect = (selectedFiles) => {
+    setFiles(selectedFiles);
+  };
+
+  const handleRemoveFile = () => {
+    setFiles([]);
+  };
+
+  const handleCompress = async () => {
+    if (files.length === 0) {
+      toast.error('Please select a PDF file to compress');
+      return;
+    }
+
+    setIsCompressing(true);
+    const loadingToast = toast.loading('Compressing your PDF...');
+
+    try {
+      const response = await uploadFile('/api/pdf/compress', files[0]);
+      downloadBlob(response, files[0].name.replace('.pdf', '_compressed.pdf'));
+      toast.success('PDF compressed successfully!', { id: loadingToast });
+      setFiles([]);
+    } catch (error) {
+      console.error('Error compressing PDF:', error);
+      toast.error(error.message || 'Failed to compress PDF. Please try again.', { id: loadingToast });
+    } finally {
+      setIsCompressing(false);
+    }
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
-      if (acceptedFiles.length > 0) {
-        setSelectedFile(acceptedFiles[0]);
-        setError(null);
-      }
+      handleFileSelect(acceptedFiles);
     },
     accept: {
       'application/pdf': ['.pdf']
@@ -22,136 +52,110 @@ export default function CompressPdf() {
     maxSize: 10 * 1024 * 1024 // 10MB
   });
 
-  const handleCompress = async () => {
-    if (!selectedFile) {
-      setError('Please select a PDF file to compress');
-      return;
-    }
-
-    setIsCompressing(true);
-    setError(null);
-
-    try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-
-      const response = await fetch('/api/pdf/compress', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to compress PDF');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `compressed_${selectedFile.name}`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      setSelectedFile(null);
-    } catch (err) {
-      setError(err.message || 'An error occurred while compressing the PDF');
-    } finally {
-      setIsCompressing(false);
-    }
-  };
-
   return (
-    <div className="bg-white py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        {/* Top Ad */}
-        <div className="mb-8">
-          <GoogleAd
-            slot="compress-pdf-top"
-            format="horizontal"
-            style={{ minHeight: '90px', margin: '0 auto' }}
-          />
-        </div>
-
-        <div className="mx-auto max-w-2xl text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-            Compress PDF
-          </h1>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
-            Reduce the size of your PDF files while maintaining quality. Perfect for sharing and uploading.
-          </p>
-        </div>
-
-        {/* Side Ad */}
-        <div className="fixed right-4 top-1/2 transform -translate-y-1/2 hidden lg:block">
-          <GoogleAd
-            slot="compress-pdf-side"
-            format="vertical"
-            style={{ width: '160px', minHeight: '600px' }}
-          />
-        </div>
-
-        <div className="mx-auto mt-16 max-w-2xl">
-          <div
-            {...getRootProps()}
-            className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
-          >
-            <div className="text-center">
-              <DocumentMinusIcon className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true" />
-              <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                <label
-                  htmlFor="file-upload"
-                  className="relative cursor-pointer rounded-md bg-white font-semibold text-primary-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary-600 focus-within:ring-offset-2 hover:text-primary-500"
-                >
-                  <span>Upload a file</span>
-                  <input id="file-upload" name="file-upload" type="file" className="sr-only" {...getInputProps()} />
-                </label>
-                <p className="pl-1">or drag and drop</p>
-              </div>
-              <p className="text-xs leading-5 text-gray-600">PDF up to 10MB</p>
-            </div>
+    <div className="min-h-screen bg-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mx-auto max-w-3xl">
+          {/* Header */}
+          <div className="mb-8">
+            <button
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors"
+            >
+              <ArrowLeftIcon className="h-4 w-4 mr-2" />
+              Back
+            </button>
+            <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Compress PDF
+            </h1>
+            <p className="mt-2 text-lg text-gray-600">
+              Reduce the size of your PDF files while maintaining quality. Perfect for sharing and uploading.
+            </p>
           </div>
 
-          {selectedFile && (
-            <div className="mt-4 flex items-center justify-between rounded-lg border border-gray-200 p-4">
-              <div className="flex items-center">
-                <DocumentTextIcon className="h-8 w-8 text-primary-600" />
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-900">{selectedFile.name}</p>
-                  <p className="text-sm text-gray-500">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
-                </div>
+          {/* Upload Area */}
+          <div className="mt-8">
+            <div
+              {...getRootProps()}
+              className={`relative rounded-2xl border-2 border-dashed p-12 text-center transition-colors ${
+                isDragActive
+                  ? 'border-primary-500 bg-primary-50'
+                  : 'border-gray-300 hover:border-primary-500 hover:bg-gray-50'
+              }`}
+            >
+              <input {...getInputProps()} />
+              <DocumentArrowUpIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <div className="mt-4">
+                <p className="text-base font-semibold text-gray-900">
+                  {isDragActive ? 'Drop your PDF here' : 'Drag and drop your PDF here'}
+                </p>
+                <p className="mt-1 text-sm text-gray-500">
+                  or click to browse files
+                </p>
               </div>
-              <button
-                onClick={handleCompress}
-                disabled={isCompressing}
-                className="rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-50"
-              >
-                {isCompressing ? 'Compressing...' : 'Compress PDF'}
-              </button>
+              <p className="mt-2 text-xs text-gray-500">
+                PDF files up to 10MB
+              </p>
             </div>
-          )}
 
-          {error && (
-            <div className="mt-4 rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">Error</h3>
-                  <div className="mt-2 text-sm text-red-700">
-                    <p>{error}</p>
+            {/* Selected File */}
+            {files.length > 0 && (
+              <div className="mt-6">
+                <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0">
+                        <DocumentMinusIcon className="h-8 w-8 text-orange-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{files[0].name}</p>
+                        <p className="text-sm text-gray-500">
+                          {(files[0].size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <button
+                        onClick={handleRemoveFile}
+                        className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 transition-colors"
+                      >
+                        <XMarkIcon className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={handleCompress}
+                        disabled={isCompressing}
+                        className="rounded-full bg-primary-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                      >
+                        {isCompressing ? 'Compressing...' : 'Compress PDF'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
 
-        {/* Bottom Ad */}
-        <div className="mt-8">
-          <GoogleAd
-            slot="compress-pdf-bottom"
-            format="horizontal"
-            style={{ minHeight: '90px', margin: '0 auto' }}
-          />
+            {/* Features */}
+            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
+              <div className="rounded-2xl bg-gray-50 p-6">
+                <h3 className="text-lg font-semibold text-gray-900">Reduce File Size</h3>
+                <p className="mt-2 text-sm text-gray-600">
+                  Significantly reduce PDF file size while maintaining readability.
+                </p>
+              </div>
+              <div className="rounded-2xl bg-gray-50 p-6">
+                <h3 className="text-lg font-semibold text-gray-900">Fast Compression</h3>
+                <p className="mt-2 text-sm text-gray-600">
+                  Quick compression processing for immediate results.
+                </p>
+              </div>
+              <div className="rounded-2xl bg-gray-50 p-6">
+                <h3 className="text-lg font-semibold text-gray-900">Quality Preserved</h3>
+                <p className="mt-2 text-sm text-gray-600">
+                  Smart compression algorithms maintain document quality.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
