@@ -96,7 +96,7 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 CORS Origin: ${process.env.CORS_ORIGIN || 'http://localhost:3001'}`);
   console.log(`📁 Static files served from: ${clientDistPath}`);
-  console.log(`🚀 Visit: http://localhost:${PORT}`);
+  console.log(`🚀 Visit: ${process.env.NODE_ENV === 'production' ? 'https://flexipdf-9frt.onrender.com' : `http://localhost:${PORT}`}`);
 });
 
 // Handle server errors
