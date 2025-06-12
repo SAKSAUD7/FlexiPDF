@@ -35,6 +35,11 @@ if (!fs.existsSync(uploadsDir)) {
 // Routes
 app.use('/api/pdf', pdfRoutes);
 
+// Add health route
+app.get('/', (req, res) => {
+  res.send('FlexiPDF API is running');
+});
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   const clientBuildPath = path.join(__dirname, '../client/dist');
