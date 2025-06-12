@@ -501,4 +501,4 @@ export const getPdfMetadata = async (inputFile) => {
 const extractTextFromPdfBasic = async (inputFile) => {
   // Temporary implementation that returns a placeholder
   return "Text extraction temporarily disabled. Please try other PDF tools.";
-};
+}; 

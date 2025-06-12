@@ -65,7 +65,7 @@ export default function MergePdf() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="mx-auto max-w-3xl">
           {/* Header */}
-          <div className="mb-8">
+        <div className="mb-8">
             <button
               onClick={() => navigate(-1)}
               className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors"
@@ -74,23 +74,23 @@ export default function MergePdf() {
               Back
             </button>
             <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Merge PDF Files
-            </h1>
+            Merge PDF Files
+          </h1>
             <p className="mt-2 text-lg text-gray-600">
-              Combine multiple PDF files into a single document while maintaining the original quality.
-            </p>
-          </div>
+            Combine multiple PDF files into a single document while maintaining the original quality.
+          </p>
+        </div>
 
           {/* Upload Area */}
           <div className="mt-8">
-            <div
-              {...getRootProps()}
+          <div
+            {...getRootProps()}
               className={`relative rounded-2xl border-2 border-dashed p-12 text-center transition-colors ${
                 isDragActive
                   ? 'border-primary-500 bg-primary-50'
                   : 'border-gray-300 hover:border-primary-500 hover:bg-gray-50'
               }`}
-            >
+          >
               <input {...getInputProps()} />
               <DocumentDuplicateIcon className="mx-auto h-12 w-12 text-gray-400" />
               <div className="mt-4">
@@ -119,9 +119,9 @@ export default function MergePdf() {
                   >
                     Clear All
                   </button>
-                </div>
+          </div>
 
-                {files.map((file, index) => (
+              {files.map((file, index) => (
                   <div key={index} className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                     <div className="flex items-center space-x-4">
                       <div className="flex-shrink-0">
@@ -134,42 +134,42 @@ export default function MergePdf() {
                         <p className="text-sm text-gray-500">
                           {(file.size / 1024 / 1024).toFixed(2)} MB
                         </p>
-                      </div>
                     </div>
-                    <button
-                      onClick={() => handleRemoveFile(index)}
-                      className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 transition-colors"
-                    >
-                      <XMarkIcon className="h-5 w-5" />
-                    </button>
                   </div>
-                ))}
-
-                <div className="pt-4">
                   <button
-                    onClick={handleMerge}
-                    disabled={files.length < 2 || isMerging}
-                    className="w-full rounded-full bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    onClick={() => handleRemoveFile(index)}
+                      className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 transition-colors"
                   >
-                    {isMerging ? 'Merging PDFs...' : `Merge ${files.length} PDFs`}
+                    <XMarkIcon className="h-5 w-5" />
                   </button>
                 </div>
+              ))}
+
+                <div className="pt-4">
+                <button
+                  onClick={handleMerge}
+                  disabled={files.length < 2 || isMerging}
+                    className="w-full rounded-full bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                >
+                    {isMerging ? 'Merging PDFs...' : `Merge ${files.length} PDFs`}
+                </button>
               </div>
-            )}
+            </div>
+          )}
 
             {/* Error Display */}
-            {error && (
+          {error && (
               <div className="mt-6 rounded-md bg-red-50 p-4">
-                <div className="flex">
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">Error</h3>
-                    <div className="mt-2 text-sm text-red-700">
-                      <p>{error}</p>
-                    </div>
+              <div className="flex">
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">Error</h3>
+                  <div className="mt-2 text-sm text-red-700">
+                    <p>{error}</p>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
             {/* Features */}
             <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
@@ -192,7 +192,7 @@ export default function MergePdf() {
                 </p>
               </div>
             </div>
-          </div>
+        </div>
         </div>
       </div>
     </div>
