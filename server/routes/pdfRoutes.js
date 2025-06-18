@@ -184,6 +184,459 @@ router.post('/convert-word-to-pdf', upload.single('file'), handleMulterError, as
   }
 });
 
+// Convert Excel to PDF
+router.post('/convert-excel-to-pdf', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `converted-${Date.now()}.pdf`);
+    
+    await pdfUtils.convertExcelToPdf(inputFile, outputFile);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'converted.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error converting Excel to PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Convert PowerPoint to PDF
+router.post('/convert-powerpoint-to-pdf', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `converted-${Date.now()}.pdf`);
+    
+    await pdfUtils.convertPowerPointToPdf(inputFile, outputFile);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'converted.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error converting PowerPoint to PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Convert Images to PDF
+router.post('/convert-images-to-pdf', upload.array('images', 20), handleMulterError, async (req, res) => {
+  const filesToCleanup = req.files?.map(f => f.path) || [];
+  
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ success: false, message: 'No images uploaded' });
+    }
+
+    const imageFiles = req.files.map(file => file.path);
+    const outputFile = path.join(__dirname, '../uploads', `converted-${Date.now()}.pdf`);
+    const options = {
+      pageSize: req.body.pageSize || 'A4',
+      orientation: req.body.orientation || 'auto',
+      margin: parseInt(req.body.margin) || 10
+    };
+    
+    await pdfUtils.convertImagesToPdf(imageFiles, outputFile, options);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'converted.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error converting images to PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Convert HTML to PDF
+router.post('/convert-html-to-pdf', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    const outputFile = path.join(__dirname, '../uploads', `converted-${Date.now()}.pdf`);
+    
+    if (req.body.url) {
+      // Convert from URL
+      await pdfUtils.convertHtmlToPdf(req.body.url, outputFile, { isUrl: true });
+    } else if (req.file) {
+      // Convert from uploaded HTML file
+      await pdfUtils.convertHtmlToPdf(req.file.path, outputFile, { isUrl: false });
+    } else {
+      return res.status(400).json({ success: false, message: 'No URL or HTML file provided' });
+    }
+    
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'converted.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error converting HTML to PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Rotate PDF
+router.post('/rotate', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `rotated-${Date.now()}.pdf`);
+    const angle = parseInt(req.body.angle) || 90;
+    const pages = req.body.pages || 'all';
+    
+    await pdfUtils.rotatePdf(inputFile, outputFile, angle, pages);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'rotated.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error rotating PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Add page numbers
+router.post('/add-page-numbers', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `numbered-${Date.now()}.pdf`);
+    const options = {
+      position: req.body.position || 'bottom-center',
+      startNumber: parseInt(req.body.startNumber) || 1,
+      fontSize: parseInt(req.body.fontSize) || 12
+    };
+    
+    await pdfUtils.addPageNumbers(inputFile, outputFile, options);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'numbered.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error adding page numbers:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Extract pages
+router.post('/extract-pages', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `extracted-${Date.now()}.pdf`);
+    const pages = req.body.pages; // e.g., "1,3,5-7"
+    
+    if (!pages) {
+      return res.status(400).json({ success: false, message: 'Page numbers are required' });
+    }
+    
+    await pdfUtils.extractPages(inputFile, outputFile, pages);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'extracted.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error extracting pages:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Remove pages
+router.post('/remove-pages', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `removed-${Date.now()}.pdf`);
+    const pages = req.body.pages; // e.g., "2,4,6-8"
+    
+    if (!pages) {
+      return res.status(400).json({ success: false, message: 'Page numbers to remove are required' });
+    }
+    
+    await pdfUtils.removePages(inputFile, outputFile, pages);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'removed.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error removing pages:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Organize PDF (rearrange pages)
+router.post('/organize', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `organized-${Date.now()}.pdf`);
+    const pageOrder = req.body.pageOrder; // e.g., "3,1,2,4"
+    
+    if (!pageOrder) {
+      return res.status(400).json({ success: false, message: 'Page order is required' });
+    }
+    
+    await pdfUtils.organizePdf(inputFile, outputFile, pageOrder);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'organized.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error organizing PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Convert PDF to PDF/A
+router.post('/convert-to-pdf-a', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `pdf-a-${Date.now()}.pdf`);
+    
+    await pdfUtils.convertToPdfA(inputFile, outputFile);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'pdf-a.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error converting to PDF/A:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Repair PDF
+router.post('/repair', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `repaired-${Date.now()}.pdf`);
+    
+    await pdfUtils.repairPdf(inputFile, outputFile);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'repaired.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error repairing PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Flatten PDF
+router.post('/flatten', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `flattened-${Date.now()}.pdf`);
+    
+    await pdfUtils.flattenPdf(inputFile, outputFile);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'flattened.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error flattening PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Redact PDF
+router.post('/redact', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `redacted-${Date.now()}.pdf`);
+    const redactionAreas = JSON.parse(req.body.redactionAreas || '[]');
+    
+    await pdfUtils.redactPdf(inputFile, outputFile, redactionAreas);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'redacted.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error redacting PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// AI Features - Chat with PDF
+router.post('/chat', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const question = req.body.question;
+    
+    if (!question) {
+      return res.status(400).json({ success: false, message: 'Question is required' });
+    }
+    
+    const response = await pdfUtils.chatWithPdf(inputFile, question);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    
+    res.json({ 
+      success: true, 
+      response 
+    });
+  } catch (error) {
+    console.error('Error chatting with PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// AI Features - Summarize PDF
+router.post('/summarize', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const length = req.body.length || 'medium'; // short, medium, long
+    
+    const summary = await pdfUtils.summarizePdf(inputFile, length);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    
+    res.json({ 
+      success: true, 
+      summary 
+    });
+  } catch (error) {
+    console.error('Error summarizing PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// AI Features - Translate PDF
+router.post('/translate', upload.single('file'), handleMulterError, async (req, res) => {
+  const filesToCleanup = [req.file?.path].filter(Boolean);
+  
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const inputFile = req.file.path;
+    const outputFile = path.join(__dirname, '../uploads', `translated-${Date.now()}.pdf`);
+    const targetLanguage = req.body.targetLanguage || 'en';
+    
+    await pdfUtils.translatePdf(inputFile, outputFile, targetLanguage);
+    filesToCleanup.push(outputFile);
+    
+    res.download(outputFile, 'translated.pdf', (err) => {
+      if (err) console.error('Error downloading file:', err);
+      pdfUtils.cleanupFiles(filesToCleanup);
+    });
+  } catch (error) {
+    console.error('Error translating PDF:', error);
+    pdfUtils.cleanupFiles(filesToCleanup);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // =============================================================================
 // ORGANIZE ROUTES
 // =============================================================================
