@@ -134,10 +134,10 @@ export default function Navbar() {
   };
 
   return (
-    <header className={`fixed w-full z-50 transition-all duration-300 ${
-      scrolled ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-gray-100' : 'bg-white/80 backdrop-blur-sm'
+    <header className={`fixed w-full top-0 z-[100] transition-all duration-300 ${
+      scrolled ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-gray-100' : 'bg-white/90 backdrop-blur-sm border-b border-gray-100/50'
     }`}>
-      <nav className="mx-auto flex max-w-7xl items-center justify-between p-3 lg:px-6" aria-label="Global">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-6" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link to="/" className="-m-1.5 p-1.5 transition-transform hover:scale-105">
             <span className="sr-only">FlexiPDF</span>
@@ -145,7 +145,7 @@ export default function Navbar() {
               <div className="h-9 w-9 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                 <DocumentTextIcon className="h-5 w-5 text-white" />
               </div>
-              <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hidden sm:block">
+              <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 FlexiPDF
               </span>
             </div>
@@ -155,7 +155,7 @@ export default function Navbar() {
         <div className="flex lg:hidden">
           <button
             type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 hover:bg-gray-100 transition-colors"
+            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 hover:bg-gray-100 transition-colors border border-gray-200 bg-white shadow-sm"
             onClick={() => setMobileMenuOpen(true)}
           >
             <span className="sr-only">Open main menu</span>
@@ -203,7 +203,7 @@ export default function Navbar() {
               
               {/* Dropdown Menu with Scroll */}
               <div 
-                className={`absolute top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 transition-all duration-200 backdrop-blur-sm ${
+                className={`absolute top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 transition-all duration-200 backdrop-blur-sm z-[110] ${
                   openDropdown === categoryName ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-4 invisible'
                 }`}
                 style={{ left: categoryName === 'AI Features' ? '-250px' : '-150px' }}
@@ -277,8 +277,8 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile menu - Enhanced */}
-      <div className={`lg:hidden fixed inset-0 z-50 transition-opacity duration-300 ${
+      {/* Enhanced Mobile menu */}
+      <div className={`lg:hidden fixed inset-0 z-[200] transition-opacity duration-300 ${
         mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}>
         <div 
@@ -287,10 +287,10 @@ export default function Navbar() {
           }`} 
           onClick={() => setMobileMenuOpen(false)} 
         />
-        <div className={`fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-4 py-4 sm:max-w-sm transition-transform duration-300 ${
+        <div className={`fixed inset-y-0 right-0 z-[210] w-full overflow-y-auto bg-white px-4 py-4 sm:max-w-sm transition-transform duration-300 ${
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-6">
             <Link to="/" className="-m-1.5 p-1.5" onClick={() => setMobileMenuOpen(false)}>
               <span className="sr-only">FlexiPDF</span>
               <div className="flex items-center space-x-2">
@@ -312,14 +312,15 @@ export default function Navbar() {
             </button>
           </div>
           
-          <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="space-y-2 py-6">
+          <div className="flow-root">
+            <div className="space-y-4">
+              {/* Main Navigation */}
+              <div className="space-y-2">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 transition-colors ${
+                    className={`block rounded-lg px-3 py-3 text-base font-semibold transition-colors ${
                       item.highlight
                         ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
                         : location.pathname === item.href
@@ -334,58 +335,59 @@ export default function Navbar() {
                     </div>
                   </Link>
                 ))}
+              </div>
                 
-                {/* Tools Categories in Mobile */}
-                <div className="space-y-3 pt-4">
-                  <p className="px-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">Tools</p>
-                  {Object.entries(toolsCategories).map(([categoryName, category]) => (
-                    <div key={categoryName} className="space-y-2">
-                      <div className="flex items-center space-x-2 px-3">
-                        <div className={`h-1 w-3 bg-gradient-to-r ${category.color} rounded-full`}></div>
-                        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                          {categoryName}
-                        </p>
-                        {categoryName === 'AI Features' && (
-                          <span className="bg-violet-100 text-violet-600 text-xs font-bold px-1 py-0.5 rounded flex items-center">
-                            <FireIcon className="h-2 w-2 mr-1" />
-                            NEW
-                          </span>
-                        )}
-                      </div>
-                      <div className="max-h-40 overflow-y-auto px-3 space-y-1">
-                        {category.tools.map((tool) => {
-                          const Icon = tool.icon;
-                          return (
-                            <Link
-                              key={tool.name}
-                              to={tool.href}
-                              className="flex items-center space-x-2 p-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              <div className={`h-5 w-5 bg-gradient-to-r ${category.color} rounded flex items-center justify-center`}>
-                                <Icon className="h-3 w-3 text-white" />
-                              </div>
-                              <span className="flex-1 text-xs truncate">{tool.name}</span>
-                              {tool.popular && (
-                                <span className="bg-blue-100 text-blue-600 text-xs font-medium px-1 py-0.5 rounded">
-                                  ★
-                                </span>
-                              )}
-                              {tool.new && (
-                                <span className="bg-green-100 text-green-600 text-xs font-medium px-1 py-0.5 rounded">
-                                  NEW
-                                </span>
-                              )}
-                            </Link>
-                          );
-                        })}
-                      </div>
+              {/* Tools Categories in Mobile */}
+              <div className="space-y-4 pt-4 border-t border-gray-200">
+                <p className="px-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">All Tools</p>
+                {Object.entries(toolsCategories).map(([categoryName, category]) => (
+                  <div key={categoryName} className="space-y-2">
+                    <div className="flex items-center space-x-2 px-3">
+                      <div className={`h-1 w-4 bg-gradient-to-r ${category.color} rounded-full`}></div>
+                      <p className="text-sm font-medium text-gray-800">
+                        {categoryName}
+                      </p>
+                      {categoryName === 'AI Features' && (
+                        <span className="bg-violet-100 text-violet-600 text-xs font-bold px-2 py-0.5 rounded flex items-center">
+                          <FireIcon className="h-2 w-2 mr-1" />
+                          NEW
+                        </span>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <div className="max-h-48 overflow-y-auto px-3 space-y-1">
+                      {category.tools.map((tool) => {
+                        const Icon = tool.icon;
+                        return (
+                          <Link
+                            key={tool.name}
+                            to={tool.href}
+                            className="flex items-center space-x-3 p-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <div className={`h-6 w-6 bg-gradient-to-r ${category.color} rounded-lg flex items-center justify-center`}>
+                              <Icon className="h-3 w-3 text-white" />
+                            </div>
+                            <span className="flex-1 text-sm">{tool.name}</span>
+                            {tool.popular && (
+                              <span className="bg-blue-100 text-blue-600 text-xs font-medium px-1.5 py-0.5 rounded">
+                                ★
+                              </span>
+                            )}
+                            {tool.new && (
+                              <span className="bg-green-100 text-green-600 text-xs font-medium px-1.5 py-0.5 rounded">
+                                NEW
+                              </span>
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
               
-              <div className="py-6">
+              {/* CTA Button */}
+              <div className="pt-4 border-t border-gray-200">
                 <Link
                   to="/compress-pdf"
                   className="block rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 text-center text-base font-semibold text-white shadow-lg transition-all duration-200"
