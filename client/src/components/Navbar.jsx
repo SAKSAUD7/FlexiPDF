@@ -67,7 +67,7 @@ const toolsCategories = {
       { name: 'Add Page Numbers', href: '/add-page-numbers', icon: HashtagIcon },
     ]
   },
-  'Edit PDF': {
+  'Editor': {
     color: 'from-purple-500 to-pink-500',
     tools: [
       { name: 'Edit PDF', href: '/edit-pdf', icon: PencilIcon, popular: true },
