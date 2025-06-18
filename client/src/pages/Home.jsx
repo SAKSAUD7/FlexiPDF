@@ -313,7 +313,91 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Popular Tools Section - Enhanced */}
+      {/* All Tools by Category - MOVED TO TOP PRIORITY */}
+      <div className="container-fluid section-padding">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+            <BoltIcon className="h-4 w-4" />
+            <span>Complete PDF Toolkit</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+            All{' '}
+            <span className="text-gradient">PDF tools</span>
+            {' '}you need
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            35+ professional PDF tools organized by category. Convert, edit, organize, optimize, and AI-powered features.
+          </p>
+        </div>
+
+        <div className="space-y-12">
+          {categories.map((category, categoryIndex) => {
+            const categoryTools = tools.filter(tool => tool.category === category);
+            const gradients = {
+              'Convert': 'from-emerald-500 to-teal-500',
+              'Organize': 'from-blue-500 to-indigo-500',
+              'Edit & Secure': 'from-purple-500 to-pink-500',
+              'Optimize': 'from-orange-500 to-red-500',
+              'AI Features': 'from-violet-500 to-purple-600'
+            };
+            
+            return (
+              <div 
+                key={category} 
+                className={`slide-up`}
+                style={{ animationDelay: `${categoryIndex * 200}ms` }}
+              >
+                <div className="flex items-center gap-4 mb-8">
+                  <div className={`h-2 w-12 bg-gradient-to-r ${gradients[category]} rounded-full`}></div>
+                  <h3 className="text-2xl font-bold text-gray-900">{category}</h3>
+                  {category === 'AI Features' && (
+                    <span className="bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center">
+                      <FireIcon className="h-3 w-3 mr-1" />
+                      NEW
+                    </span>
+                  )}
+                </div>
+                
+                <div className="grid-auto-fill">
+                  {categoryTools.map((tool, index) => (
+                    <Link
+                      key={tool.name}
+                      to={tool.href}
+                      className="app-card group p-4 mobile-optimized hover-lift"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className={`h-10 w-10 bg-gradient-to-r ${tool.color} rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                          <tool.icon className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <h4 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                              {tool.name}
+                            </h4>
+                            {tool.popular && (
+                              <span className="bg-blue-100 text-blue-600 text-xs font-medium px-1.5 py-0.5 rounded">
+                                Popular
+                              </span>
+                            )}
+                            {tool.new && (
+                              <span className="bg-green-100 text-green-600 text-xs font-medium px-1.5 py-0.5 rounded">
+                                NEW
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 truncate">{tool.description}</p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Popular Tools Section - Now Secondary */}
       <div className="container-fluid section-padding bg-gradient-to-br from-gray-50 to-blue-50">
         <div className="text-center mb-16">
           <div className="inline-flex items-center space-x-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold mb-4">
@@ -397,85 +481,6 @@ export default function Home() {
               <p className="text-gray-600 leading-relaxed">{feature.description}</p>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Tools by Category - Enhanced */}
-      <div className="container-fluid section-padding bg-gradient-to-br from-blue-50 to-purple-50">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-            Complete{' '}
-            <span className="text-gradient">PDF toolkit</span>
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Everything you need to work with PDFs, organized by category for easy discovery.
-          </p>
-        </div>
-
-        <div className="space-y-12">
-          {categories.map((category, categoryIndex) => {
-            const categoryTools = tools.filter(tool => tool.category === category);
-            const gradients = {
-              'Convert': 'from-emerald-500 to-teal-500',
-              'Organize': 'from-blue-500 to-indigo-500',
-              'Edit & Secure': 'from-purple-500 to-pink-500',
-              'Optimize': 'from-orange-500 to-red-500',
-              'AI Features': 'from-violet-500 to-purple-600'
-            };
-            
-            return (
-              <div 
-                key={category} 
-                className={`slide-up`}
-                style={{ animationDelay: `${categoryIndex * 200}ms` }}
-              >
-                <div className="flex items-center gap-4 mb-8">
-                  <div className={`h-2 w-12 bg-gradient-to-r ${gradients[category]} rounded-full`}></div>
-                  <h3 className="text-2xl font-bold text-gray-900">{category}</h3>
-                  {category === 'AI Features' && (
-                    <span className="bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center">
-                      <FireIcon className="h-3 w-3 mr-1" />
-                      NEW
-                    </span>
-                  )}
-                </div>
-                
-                <div className="grid-auto-fill">
-                  {categoryTools.map((tool, index) => (
-                    <Link
-                      key={tool.name}
-                      to={tool.href}
-                      className="app-card group p-4 mobile-optimized"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className={`h-10 w-10 bg-gradient-to-r ${tool.color} rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-                          <tool.icon className="h-5 w-5 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h4 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
-                              {tool.name}
-                            </h4>
-                            {tool.popular && (
-                              <span className="bg-blue-100 text-blue-600 text-xs font-medium px-1.5 py-0.5 rounded">
-                                Popular
-                              </span>
-                            )}
-                            {tool.new && (
-                              <span className="bg-green-100 text-green-600 text-xs font-medium px-1.5 py-0.5 rounded">
-                                NEW
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-600 truncate">{tool.description}</p>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
         </div>
       </div>
 

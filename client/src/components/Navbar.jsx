@@ -36,78 +36,77 @@ import {
 
 const navigation = [
   { name: 'Home', href: '/' },
-  { name: 'Convert', href: '/pdf-to-word' },
-  { name: 'Merge', href: '/merge-pdf' },
   { name: 'Edit PDF', href: '/edit-pdf', highlight: true },
-  { name: 'Compress', href: '/compress-pdf' },
 ];
 
-const toolsCategories = [
-  {
-    name: 'Convert',
+const toolsCategories = {
+  'Convert': {
     color: 'from-emerald-500 to-teal-500',
     tools: [
       { name: 'Word to PDF', href: '/word-to-pdf', icon: DocumentTextIcon, popular: true },
       { name: 'PDF to Word', href: '/pdf-to-word', icon: DocumentTextIcon, popular: true },
       { name: 'Excel to PDF', href: '/excel-to-pdf', icon: TableCellsIcon },
       { name: 'PDF to Excel', href: '/pdf-to-excel', icon: TableCellsIcon },
+      { name: 'PowerPoint to PDF', href: '/powerpoint-to-pdf', icon: PresentationChartBarIcon },
+      { name: 'PDF to PowerPoint', href: '/pdf-to-powerpoint', icon: PresentationChartBarIcon },
       { name: 'JPG to PDF', href: '/jpg-to-pdf', icon: PhotoIcon, popular: true },
       { name: 'PDF to JPG', href: '/pdf-to-jpg', icon: PhotoIcon, popular: true },
+      { name: 'HTML to PDF', href: '/html-to-pdf', icon: DocumentArrowUpIcon },
+      { name: 'PDF to PDF/A', href: '/pdf-to-pdf-a', icon: DocumentArrowDownIcon },
     ]
   },
-  {
-    name: 'Organize',
+  'Organize': {
     color: 'from-blue-500 to-indigo-500',
     tools: [
       { name: 'Merge PDFs', href: '/merge-pdf', icon: DocumentDuplicateIcon, popular: true },
       { name: 'Split PDF', href: '/split-pdf', icon: ScissorsIcon, popular: true },
       { name: 'Rotate PDF', href: '/rotate-pdf', icon: ArrowPathIcon },
       { name: 'Extract Pages', href: '/extract-pages', icon: RectangleStackIcon },
-      { name: 'Add Page Numbers', href: '/add-page-numbers', icon: HashtagIcon },
+      { name: 'Remove Pages', href: '/remove-pages', icon: MinusIcon },
       { name: 'Organize PDF', href: '/organize-pdf', icon: RectangleStackIcon },
+      { name: 'Add Page Numbers', href: '/add-page-numbers', icon: HashtagIcon },
     ]
   },
-  {
-    name: 'Edit & Secure',
+  'Edit PDF': {
     color: 'from-purple-500 to-pink-500',
     tools: [
       { name: 'Edit PDF', href: '/edit-pdf', icon: PencilIcon, popular: true },
       { name: 'Add Watermark', href: '/add-watermark', icon: SparklesIcon },
       { name: 'Crop PDF', href: '/crop-pdf', icon: ScissorsIcon },
+      { name: 'Redact PDF', href: '/redact-pdf', icon: EyeSlashIcon },
       { name: 'Sign PDF', href: '/sign-pdf', icon: ClipboardDocumentCheckIcon, popular: true },
       { name: 'Protect PDF', href: '/protect-pdf', icon: LockClosedIcon },
       { name: 'Unlock PDF', href: '/unlock-pdf', icon: LockOpenIcon },
     ]
   },
-  {
-    name: 'Optimize',
+  'Optimize': {
     color: 'from-orange-500 to-red-500',
     tools: [
       { name: 'Compress PDF', href: '/compress-pdf', icon: ArrowsPointingOutIcon, popular: true },
       { name: 'OCR PDF', href: '/ocr-pdf', icon: MagnifyingGlassIcon },
       { name: 'Repair PDF', href: '/repair-pdf', icon: WrenchScrewdriverIcon },
+      { name: 'Flatten PDF', href: '/flatten-pdf', icon: DocumentArrowDownIcon },
       { name: 'Compare PDFs', href: '/compare-pdfs', icon: ClipboardDocumentCheckIcon },
       { name: 'PDF Reader', href: '/pdf-reader', icon: EyeIcon },
       { name: 'Share PDF', href: '/share-pdf', icon: ShareIcon },
+      { name: 'Scan to PDF', href: '/scan-to-pdf', icon: DevicePhoneMobileIcon },
     ]
   },
-  {
-    name: 'AI Features',
+  'AI Features': {
     color: 'from-violet-500 to-purple-600',
     tools: [
       { name: 'Chat with PDF', href: '/chat-with-pdf', icon: ChatBubbleLeftRightIcon, new: true },
       { name: 'PDF Summarizer', href: '/pdf-summarizer', icon: CpuChipIcon, new: true },
       { name: 'Translate PDF', href: '/translate-pdf', icon: LanguageIcon, new: true },
-      { name: 'Scan to PDF', href: '/scan-to-pdf', icon: DevicePhoneMobileIcon },
     ]
   }
-];
+};
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const [scrolled, setScrolled] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRefs = useRef({});
   const location = useLocation();
 
   useEffect(() => {
@@ -120,13 +119,19 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setToolsDropdownOpen(false);
-      }
+      Object.values(dropdownRefs.current).forEach((ref, index) => {
+        if (ref && !ref.contains(event.target)) {
+          setOpenDropdown(null);
+        }
+      });
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleDropdownToggle = (categoryName) => {
+    setOpenDropdown(openDropdown === categoryName ? null : categoryName);
+  };
 
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${
@@ -158,7 +163,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        <div className="hidden lg:flex lg:gap-x-1">
+        <div className="hidden lg:flex lg:gap-x-1 lg:items-center">
           {navigation.map((item) => (
             <Link
               key={item.name}
@@ -178,108 +183,101 @@ export default function Navbar() {
             </Link>
           ))}
           
-          {/* All Tools Dropdown - Optimized and Compact */}
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
-              className={`text-sm font-semibold leading-6 transition-all duration-200 relative group px-3 py-2 rounded-lg flex items-center space-x-1 ${
-                toolsDropdownOpen ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-              }`}
-            >
-              <span>All Tools</span>
-              <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${toolsDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {/* Compact Dropdown Menu */}
-            <div 
-              className={`absolute top-full mt-2 w-[800px] bg-white rounded-2xl shadow-2xl border border-gray-100 transition-all duration-200 backdrop-blur-sm ${
-                toolsDropdownOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-4 invisible'
-              }`}
-              style={{ left: '-350px' }}
-            >
-              <div className="p-6">
-                {/* Header */}
-                <div className="mb-6 text-center">
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">PDF Tools Collection</h3>
-                  <p className="text-sm text-gray-500">35+ professional tools organized by category</p>
-                </div>
-
-                <div className="grid grid-cols-1 gap-6">
-                  {toolsCategories.map((category) => (
-                    <div key={category.name} className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <div className={`h-1 w-6 bg-gradient-to-r ${category.color} rounded-full`}></div>
-                        <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide">
-                          {category.name}
-                        </h4>
-                        {category.name === 'AI Features' && (
-                          <span className="bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full flex items-center">
-                            <FireIcon className="h-2 w-2 mr-1" />
-                            NEW
-                          </span>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-6 gap-1">
-                        {category.tools.map((tool) => {
-                          const Icon = tool.icon;
-                          return (
-                            <Link
-                              key={tool.name}
-                              to={tool.href}
-                              onClick={() => setToolsDropdownOpen(false)}
-                              className="group flex flex-col items-center space-y-1 p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200"
-                            >
-                              <div className={`h-6 w-6 bg-gradient-to-r ${category.color} rounded-md flex items-center justify-center flex-shrink-0`}>
-                                <Icon className="h-3 w-3 text-white" />
-                              </div>
-                              <div className="text-center min-w-0">
-                                <p className="text-xs font-medium text-gray-900 group-hover:text-blue-600 truncate leading-tight">
-                                  {tool.name}
-                                </p>
-                                {(tool.popular || tool.new) && (
-                                  <span className={`text-xs font-medium px-1 py-0.5 rounded mt-0.5 inline-block ${
-                                    tool.popular ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'
-                                  }`}>
-                                    {tool.popular ? 'Popular' : 'NEW'}
-                                  </span>
-                                )}
-                              </div>
-                            </Link>
-                          );
-                        })}
-                      </div>
+          {/* Category Dropdowns */}
+          {Object.entries(toolsCategories).map(([categoryName, category]) => (
+            <div key={categoryName} className="relative" ref={el => dropdownRefs.current[categoryName] = el}>
+              <button
+                onClick={() => handleDropdownToggle(categoryName)}
+                className={`text-sm font-semibold leading-6 transition-all duration-200 relative group px-3 py-2 rounded-lg flex items-center space-x-1 ${
+                  openDropdown === categoryName ? 'text-blue-600 bg-blue-50' : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                }`}
+              >
+                <span>{categoryName}</span>
+                {categoryName === 'AI Features' && (
+                  <span className="bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full ml-1">
+                    NEW
+                  </span>
+                )}
+                <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${openDropdown === categoryName ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {/* Dropdown Menu with Scroll */}
+              <div 
+                className={`absolute top-full mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 transition-all duration-200 backdrop-blur-sm ${
+                  openDropdown === categoryName ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-4 invisible'
+                }`}
+                style={{ left: categoryName === 'AI Features' ? '-250px' : '-150px' }}
+              >
+                <div className="p-4">
+                  {/* Header */}
+                  <div className="mb-4">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className={`h-1 w-6 bg-gradient-to-r ${category.color} rounded-full`}></div>
+                      <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide">
+                        {categoryName}
+                      </h4>
+                      {categoryName === 'AI Features' && (
+                        <span className="bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full flex items-center">
+                          <FireIcon className="h-2 w-2 mr-1" />
+                          NEW
+                        </span>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <p className="text-xs text-gray-500">{category.tools.length} tools available</p>
+                  </div>
 
-                <div className="mt-6 pt-4 border-t border-gray-100">
-                  <div className="text-center">
-                    <Link
-                      to="/edit-pdf"
-                      onClick={() => setToolsDropdownOpen(false)}
-                      className="inline-flex items-center space-x-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-2 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-                    >
-                      <PencilIcon className="h-3 w-3" />
-                      <span>Try PDF Editor</span>
-                    </Link>
+                  {/* Scrollable Tools List */}
+                  <div className="max-h-80 overflow-y-auto custom-scrollbar space-y-1">
+                    {category.tools.map((tool) => {
+                      const Icon = tool.icon;
+                      return (
+                        <Link
+                          key={tool.name}
+                          to={tool.href}
+                          onClick={() => setOpenDropdown(null)}
+                          className="group flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200"
+                        >
+                          <div className={`h-8 w-8 bg-gradient-to-r ${category.color} rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                            <Icon className="h-4 w-4 text-white" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <p className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                                {tool.name}
+                              </p>
+                              {tool.popular && (
+                                <span className="bg-blue-100 text-blue-600 text-xs font-medium px-1.5 py-0.5 rounded">
+                                  Popular
+                                </span>
+                              )}
+                              {tool.new && (
+                                <span className="bg-green-100 text-green-600 text-xs font-medium px-1.5 py-0.5 rounded">
+                                  NEW
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
 
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Link
-            to="/edit-pdf"
+            to="/compress-pdf"
             className="rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-2 text-sm font-semibold text-white shadow-lg hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all duration-200 hover:scale-105"
           >
-            Start Editing
+            Compress PDF
           </Link>
         </div>
       </nav>
 
-      {/* Mobile menu - Enhanced and Dynamic */}
+      {/* Mobile menu - Enhanced */}
       <div className={`lg:hidden fixed inset-0 z-50 transition-opacity duration-300 ${
         mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}>
@@ -337,25 +335,25 @@ export default function Navbar() {
                   </Link>
                 ))}
                 
-                {/* All Tools in Mobile - Compact */}
+                {/* Tools Categories in Mobile */}
                 <div className="space-y-3 pt-4">
-                  <p className="px-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">Quick Tools</p>
-                  {toolsCategories.map((category) => (
-                    <div key={category.name} className="space-y-2">
+                  <p className="px-3 text-sm font-semibold text-gray-500 uppercase tracking-wide">Tools</p>
+                  {Object.entries(toolsCategories).map(([categoryName, category]) => (
+                    <div key={categoryName} className="space-y-2">
                       <div className="flex items-center space-x-2 px-3">
                         <div className={`h-1 w-3 bg-gradient-to-r ${category.color} rounded-full`}></div>
                         <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                          {category.name}
+                          {categoryName}
                         </p>
-                        {category.name === 'AI Features' && (
+                        {categoryName === 'AI Features' && (
                           <span className="bg-violet-100 text-violet-600 text-xs font-bold px-1 py-0.5 rounded flex items-center">
                             <FireIcon className="h-2 w-2 mr-1" />
                             NEW
                           </span>
                         )}
                       </div>
-                      <div className="grid grid-cols-2 gap-1 px-3">
-                        {category.tools.slice(0, 4).map((tool) => {
+                      <div className="max-h-40 overflow-y-auto px-3 space-y-1">
+                        {category.tools.map((tool) => {
                           const Icon = tool.icon;
                           return (
                             <Link
@@ -389,11 +387,11 @@ export default function Navbar() {
               
               <div className="py-6">
                 <Link
-                  to="/edit-pdf"
+                  to="/compress-pdf"
                   className="block rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 text-center text-base font-semibold text-white shadow-lg transition-all duration-200"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Start Editing PDFs
+                  Compress PDF
                 </Link>
               </div>
             </div>

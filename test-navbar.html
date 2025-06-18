@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexiPDF Navbar Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <header class="fixed w-full z-50 bg-white/95 backdrop-blur-lg shadow-lg border-b border-gray-100">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8">
+            <!-- Logo -->
+            <div class="flex lg:flex-1">
+                <div class="flex items-center space-x-2">
+                    <div class="h-8 w-8 bg-blue-600 rounded"></div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        FlexiPDF
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="hidden lg:flex lg:gap-x-8">
+                <a href="#" class="text-sm font-semibold leading-6 px-3 py-2 rounded-lg text-blue-600 bg-blue-50">Home</a>
+                <a href="#" class="text-sm font-semibold leading-6 px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-50">Convert</a>
+                <a href="#" class="text-sm font-semibold leading-6 px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-50">Merge</a>
+                <a href="#" class="text-sm font-semibold leading-6 px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-50">Compress</a>
+                
+                <!-- All Tools Dropdown -->
+                <div class="relative group">
+                    <button class="text-sm font-semibold leading-6 px-3 py-2 rounded-lg flex items-center space-x-1 text-gray-700 hover:text-blue-600 hover:bg-gray-50 group-hover:text-blue-600 group-hover:bg-blue-50">
+                        <span>All Tools</span>
+                        <svg class="h-4 w-4 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div class="absolute top-full mt-2 w-[800px] bg-white rounded-xl shadow-2xl border border-gray-100 backdrop-blur-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200" style="left: -300px">
+                        <div class="p-6">
+                            <div class="grid grid-cols-3 gap-6">
+                                <!-- Convert Files -->
+                                <div class="space-y-3">
+                                    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">Convert Files</h3>
+                                    <div class="space-y-1">
+                                        <a href="#" class="group/item flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50">
+                                            <div class="h-5 w-5 bg-blue-600 rounded mt-0.5"></div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900 group-hover/item:text-blue-600">PDF to Word</p>
+                                                <p class="text-xs text-gray-500 mt-1">Convert PDF to editable Word documents</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="group/item flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50">
+                                            <div class="h-5 w-5 bg-blue-600 rounded mt-0.5"></div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900 group-hover/item:text-blue-600">PDF to Excel</p>
+                                                <p class="text-xs text-gray-500 mt-1">Extract data to Excel spreadsheets</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="group/item flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50">
+                                            <div class="h-5 w-5 bg-blue-600 rounded mt-0.5"></div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900 group-hover/item:text-blue-600">PDF to PowerPoint</p>
+                                                <p class="text-xs text-gray-500 mt-1">Convert PDF to PowerPoint slides</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Organize PDFs -->
+                                <div class="space-y-3">
+                                    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">Organize PDFs</h3>
+                                    <div class="space-y-1">
+                                        <a href="#" class="group/item flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50">
+                                            <div class="h-5 w-5 bg-green-600 rounded mt-0.5"></div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900 group-hover/item:text-blue-600">Merge PDFs</p>
+                                                <p class="text-xs text-gray-500 mt-1">Combine multiple PDFs into one</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="group/item flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50">
+                                            <div class="h-5 w-5 bg-green-600 rounded mt-0.5"></div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900 group-hover/item:text-blue-600">Compress PDF</p>
+                                                <p class="text-xs text-gray-500 mt-1">Reduce PDF file size</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Edit & Secure -->
+                                <div class="space-y-3">
+                                    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">Edit & Secure</h3>
+                                    <div class="space-y-1">
+                                        <a href="#" class="group/item flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50">
+                                            <div class="h-5 w-5 bg-purple-600 rounded mt-0.5"></div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900 group-hover/item:text-blue-600">Sign PDF</p>
+                                                <p class="text-xs text-gray-500 mt-1">Add digital signatures</p>
+                                            </div>
+                                        </a>
+                                        <a href="#" class="group/item flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50">
+                                            <div class="h-5 w-5 bg-purple-600 rounded mt-0.5"></div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900 group-hover/item:text-blue-600">Protect PDF</p>
+                                                <p class="text-xs text-gray-500 mt-1">Add password protection</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+                <a href="#" class="rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                    Get Started
+                </a>
+            </div>
+        </nav>
+    </header>
+    
+    <main class="pt-24 p-8 max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">FlexiPDF Navbar Demo</h1>
+        <div class="bg-white rounded-lg p-6 shadow-sm border">
+            <h2 class="text-xl font-semibold mb-4 text-blue-600">✨ New Features Implemented:</h2>
+            <ul class="space-y-2 text-gray-700">
+                <li>• <strong>Dropdown Menu:</strong> Hover over "All Tools" to see the organized dropdown</li>
+                <li>• <strong>FlexiPDF Branding:</strong> Gradient text logo next to the icon</li>
+                <li>• <strong>Modern Styling:</strong> Glass morphism effects and smooth animations</li>
+                <li>• <strong>Categorized Tools:</strong> Tools organized into Convert, Organize, and Edit & Secure</li>
+                <li>• <strong>Gradient Button:</strong> Beautiful blue-to-purple gradient on the CTA button</li>
+            </ul>
+            
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p class="text-blue-800"><strong>Instructions:</strong> This demo shows exactly what your navbar should look like. The actual React component has the same styling with interactive dropdown functionality.</p>
+            </div>
+        </div>
+    </main>
+</body>
+</html> 
