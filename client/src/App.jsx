@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
 import MobileNav from './components/MobileNav';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import PdfToWord from './pages/PdfToWord';
 import MergePdf from './pages/MergePdf';
@@ -48,6 +49,7 @@ function App() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
       <main className="flex-grow pt-16">
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/word-to-pdf" element={<WordToPdf />} />
